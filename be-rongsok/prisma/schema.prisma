@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+ datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+ }
+
+ // Enums
+ enum Role {
+   CUSTOMER
+   COLLECTOR
+   ADMIN
+ }
+
+ enum OrderStatus {
+   PENDING
+   CONFIRMED
+   IN_PROGRESS
+   AWAITING_CONFIRMATION
+   COMPLETED
+   CANCELLED
+ }
+
+ enum OrderMethod {
+   PICKUP
+   DROPOFF
+ }
+
+ // Models
+ model User {
+   id            String   @id @default(uuid())
+   name          String
+   email         String   @unique
+   passwordHash  String
+   role          Role     @default(CUSTOMER)
+   location      Unsupported("geography(Point, 4326)")?
+   avgRating     Float    @default(0)
+   createdAt     DateTime @default(now())
+   collectorProfile CollectorProfile?
+   orders        Order[]  @relation("CustomerOrders")
+   // reverse relation for collector
+   collectedOrders Order[] @relation("CollectorOrders")
+ }
+
+ model CollectorProfile {
+   id          String   @id @default(uuid())
+   user        User     @relation(fields: [userId], references: [id])
+   userId      String   @unique
+   shopName    String
+   description String?
+   radiusKm    Float    @default(5)
+   isOpen      Boolean  @default(true)
+   isPremium   Boolean  @default(false)
+   priorityScore Int    @default(0)
+   catalogs    CollectorCatalog[]
+ }
+
+ model WasteCategory {
+   id   String @id @default(uuid())
+   name String @unique
+   iconUrl String?
+   collectorCatalogs CollectorCatalog[]
+ }
+
+ model CollectorCatalog {
+   id            String   @id @default(uuid())
+   collector     CollectorProfile @relation(fields: [collectorId], references: [id])
+   collectorId    String
+   category      WasteCategory @relation(fields: [categoryId], references: [id])
+   categoryId    String
+   minPrice      Float
+   maxPrice      Float
+   isActive      Boolean @default(true)
+ }
+
+ model Order {
+   id                String   @id @default(uuid())
+   customer          User      @relation("CustomerOrders", fields: [customerId], references: [id])
+   customerId        String
+   collector         User?     @relation("CollectorOrders", fields: [collectorId], references: [id])
+   collectorId       String?
+   category          WasteCategory @relation(fields: [categoryId], references: [id])
+   categoryId        String
+   method            OrderMethod
+   photoUrl          String?
+   estimatedWeight   Float
+   actualWeight      Float?
+   agreedPrice       Float?
+   totalPrice        Float?
+   status            OrderStatus @default(PENDING)
+   createdAt         DateTime @default(now())
+   updatedAt         DateTime @updatedAt
+   // map to collector candidates
+   orderCollectors   OrderCollector[]
+ }
+
+ model OrderCollector {
+   id          String @id @default(uuid())
+   order       Order @relation(fields: [orderId], references: [id])
+   orderId     String
+   collector   User @relation(fields: [collectorId], references: [id])
+   collectorId String
+   status      String // notified, rejected, accepted
+ }
+
+ model Rating {
+   id          String @id @default(uuid())
+   order       Order @relation(fields: [orderId], references: [id])
+   orderId     String
+   rater       User @relation(fields: [raterId], references: [id])
+   raterId     String
+   ratee       User @relation(fields: [rateeId], references: [id])
+   rateeId     String
+   score       Int
+   reviewText  String?
+   createdAt   DateTime @default(now())
+   @@unique([orderId, raterId])
+ }
+
+ model Receipt {
+   id          String @id @default(uuid())
+   order       Order @relation(fields: [orderId], references: [id])
+   orderId     String
+   issuedAt    DateTime @default(now())
+   detailsJson Json
+ }
+
+ // Add spatial index (GIST) via @@index on User.location (requires raw migration later)
