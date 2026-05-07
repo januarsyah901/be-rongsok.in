@@ -42,12 +42,12 @@ Rongsok.in adalah platform mobile-first berbasis web yang mengintegrasikan geolo
 |---|---|---|
 | Frontend | Next.js (React) | SSR + routing berbasis halaman, UI Biru Sky — kombinasi ala Tokopedia |
 | Backend | Express.js (Node.js) | REST API, middleware-based, lightweight dan fleksibel |
-| Database | PostgreSQL + PostGIS | Relational data + ekstensi spasial untuk query radius geolocation |
+| Database | Supabase (PostgreSQL + PostGIS) | Relational data + ekstensi spasial untuk query radius geolocation (Free Tier) |
 | ORM | Prisma | Schema management, type-safe query, migrasi database |
 | Real-time | Socket.IO | Notifikasi pesanan real-time ke Pengepul |
-| Storage | AWS S3 / Cloudinary | Upload dan serving foto sampah dari Customer |
+| Storage | Cloudinary | Upload dan serving foto sampah dari Customer (Free Tier) |
 | Auth | JWT (jsonwebtoken) + bcrypt | Token-based auth stateless untuk integrasi Next.js SPA |
-| Deployment | Vercel (Frontend) + Railway/Render (Backend) | Platform-as-a-Service, cocok untuk skala MVP |
+| Deployment | Vercel (FE) + Render (BE) | Platform-as-a-Service, 100% Free Tier untuk keperluan lomba |
 
 > **Catatan Stack:** Full JavaScript end-to-end (Next.js + Express.js). Tidak ada PHP/Laravel. Prisma menggantikan Eloquent sebagai ORM dengan developer experience yang lebih modern.
 
@@ -170,7 +170,7 @@ Status pesanan mengikuti state machine berikut:
 
 - Notifikasi real-time menggunakan **Socket.IO** untuk setiap perubahan status pesanan.
 - Batas waktu konfirmasi Pengepul: **15 menit**. Jika lewat, pesanan otomatis `CANCELLED`.
-- Foto sampah yang diunggah Customer disimpan di storage (Cloudinary/S3) dan dilampirkan pada detail pesanan.
+- Foto sampah yang diunggah Customer disimpan di Cloudinary (Free Tier) dan dilampirkan pada detail pesanan.
 
 ### 4.5 Modul Validasi & Digital Receipt
 
