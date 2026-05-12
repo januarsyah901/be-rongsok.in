@@ -1,0 +1,61 @@
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const cors = require('cors');
+require('dotenv').config();
+
+const authRoutes = require('./routes/auth');
+const collectorRoutes = require('./routes/collector');
+const discoveryRoutes = require('./routes/discovery');
+const orderRoutes = require('./routes/order');
+const ratingRoutes = require('./routes/rating');
+const { errorHandler } = require('./middlewares/error');
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // Sesuaikan dengan domain frontend nantinya
+    methods: ['GET', 'POST', 'PATCH', 'DELETE']
+  }
+});
+
+// Middlewares
+app.use(cors());
+app.use(express.json());
+
+// Socket.IO Logic
+app.set('io', io); // Simpan io di instance app agar bisa diakses di controller
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  socket.on('join_room', (roomId) => {
+    socket.join(roomId);
+    console.log(`User joined room: ${roomId}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
+// Health Check
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Rongsok.in API is running' });
+});
+
+// API Routes
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/collector', collectorRoutes);
+app.use('/api/v1/discovery', discoveryRoutes);
+app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/ratings', ratingRoutes);
+
+// Error Handling Middleware
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🔗 API Base URL: http://localhost:${PORT}/api/v1`);
+});
