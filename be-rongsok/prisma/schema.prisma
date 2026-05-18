@@ -1,10 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
  datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [postgis]
  }
 
  // Enums
@@ -42,6 +44,9 @@ generator client {
    orders        Order[]  @relation("CustomerOrders")
    // reverse relation for collector
    collectedOrders Order[] @relation("CollectorOrders")
+   ratingsGiven  Rating[]  @relation("RaterRelation")
+   ratingsReceived Rating[] @relation("RateeRelation")
+   orderCollectors OrderCollector[]
  }
 
  model CollectorProfile {
@@ -62,6 +67,7 @@ generator client {
    name String @unique
    iconUrl String?
    collectorCatalogs CollectorCatalog[]
+   orders            Order[]
  }
 
  model CollectorCatalog {
@@ -94,6 +100,8 @@ generator client {
    updatedAt         DateTime @updatedAt
    // map to collector candidates
    orderCollectors   OrderCollector[]
+   ratings           Rating[]
+   receipt           Receipt?
  }
 
  model OrderCollector {
@@ -109,9 +117,9 @@ generator client {
    id          String @id @default(uuid())
    order       Order @relation(fields: [orderId], references: [id])
    orderId     String
-   rater       User @relation(fields: [raterId], references: [id])
+   rater       User @relation("RaterRelation", fields: [raterId], references: [id])
    raterId     String
-   ratee       User @relation(fields: [rateeId], references: [id])
+   ratee       User @relation("RateeRelation", fields: [rateeId], references: [id])
    rateeId     String
    score       Int
    reviewText  String?
@@ -120,9 +128,9 @@ generator client {
  }
 
  model Receipt {
-   id          String @id @default(uuid())
+  id          String @id @default(uuid())
    order       Order @relation(fields: [orderId], references: [id])
-   orderId     String
+   orderId     String @unique
    issuedAt    DateTime @default(now())
    detailsJson Json
  }
