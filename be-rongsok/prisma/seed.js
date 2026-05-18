@@ -35,10 +35,7 @@ async function main() {
       name: 'Pak Budi',
       email: 'budi@collector.com',
       passwordHash: await bcryptHash('collector123'),
-      role: 'COLLECTOR',
-      location: {
-        // Use raw PostGIS value via $queryRaw later – here keep null for simplicity
-      }
+      role: 'COLLECTOR'
     }
   });
 

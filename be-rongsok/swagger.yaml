@@ -180,6 +180,8 @@ components:
 paths:
   /auth/register:
     post:
+      tags:
+        - "Epic 1: Autentikasi & Onboarding"
       summary: Register a new user (customer or collector)
       requestBody:
         required: true
@@ -192,6 +194,8 @@ paths:
           description: User created
   /auth/login:
     post:
+      tags:
+        - "Epic 1: Autentikasi & Onboarding"
       summary: Login and receive JWT token
       requestBody:
         required: true
@@ -208,6 +212,8 @@ paths:
                 $ref: '#/components/schemas/AuthResponse'
   /auth/me:
     get:
+      tags:
+        - "Epic 1: Autentikasi & Onboarding"
       security:
         - BearerAuth: []
       summary: Get current authenticated user
@@ -220,6 +226,8 @@ paths:
                 $ref: '#/components/schemas/User'
   /discovery/search:
     get:
+      tags:
+        - "Epic 2: Pencarian & Discovery"
       security:
         - BearerAuth: []
       summary: Search nearby collectors
@@ -256,6 +264,8 @@ paths:
                   $ref: '#/components/schemas/DiscoveryResult'
   /collector/profile:
     post:
+      tags:
+        - "Epic 1: Autentikasi & Onboarding"
       security:
         - BearerAuth: []
       summary: Create collector profile (after collector registration)
@@ -269,6 +279,8 @@ paths:
         '201':
           description: Profile created
     patch:
+      tags:
+        - "Epic 1: Autentikasi & Onboarding"
       security:
         - BearerAuth: []
       summary: Update collector profile
@@ -283,6 +295,8 @@ paths:
           description: Profile updated
   /collector/catalogs:
     patch:
+      tags:
+        - "Epic 1: Autentikasi & Onboarding"
       security:
         - BearerAuth: []
       summary: Update collector catalog (price ranges per category)
@@ -299,6 +313,8 @@ paths:
           description: Catalogs updated
   /orders:
     post:
+      tags:
+        - "Epic 3: Order Management System"
       security:
         - BearerAuth: []
       summary: Customer creates a new order
@@ -317,6 +333,8 @@ paths:
                 $ref: '#/components/schemas/Order'
   /orders/{id}:
     get:
+      tags:
+        - "Epic 3: Order Management System"
       security:
         - BearerAuth: []
       summary: Get order details
@@ -334,6 +352,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Order'
     patch:
+      tags:
+        - "Epic 3: Order Management System"
       security:
         - BearerAuth: []
       summary: Update order status (accept, reject, validate, confirm)
@@ -362,6 +382,8 @@ paths:
           description: Order updated
   /ratings:
     post:
+      tags:
+        - "Epic 4: Rating & Trust"
       security:
         - BearerAuth: []
       summary: Submit rating after order completion
@@ -376,6 +398,8 @@ paths:
           description: Rating stored
   /ratings/user/{userId}:
     get:
+      tags:
+        - "Epic 4: Rating & Trust"
       security:
         - BearerAuth: []
       summary: Get all ratings received by a user

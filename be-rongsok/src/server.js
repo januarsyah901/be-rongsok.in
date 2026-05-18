@@ -3,6 +3,9 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const path = require('path');
 
 const authRoutes = require('./routes/auth');
 const collectorRoutes = require('./routes/collector');
@@ -44,6 +47,10 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Rongsok.in API is running' });
 });
 
+// Swagger UI
+const swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // API Routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/collector', collectorRoutes);
@@ -58,4 +65,5 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`🔗 API Base URL: http://localhost:${PORT}/api/v1`);
+  console.log(`📖 Swagger UI Docs: http://localhost:${PORT}/api-docs`);
 });
