@@ -48,7 +48,7 @@ app.get('/health', (req, res) => {
 });
 
 // Swagger UI
-const swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'));
+const swaggerDocument = YAML.load(path.join(__dirname, '../docs/swagger.yaml'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // API Routes

@@ -4,7 +4,9 @@
   "description": "Backend server for Rongsok.in",
   "main": "src/server.js",
   "scripts": {
+    "start": "node src/server.js",
     "dev": "node src/server.js",
+    "build": "npx prisma generate",
     "prisma": "prisma",
     "db:migrate": "npx prisma migrate dev --name init",
     "db:generate": "npx prisma generate",
